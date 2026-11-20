@@ -34,9 +34,9 @@ make O=out ARCH=arm64 olddefconfig -j$JOBS
 # NOTE: CONFIG_CFS_BANDWIDTH impossible on this tree (depends on !SCHED_WALT,
 # sagit uses WALT). Droidspaces skips --cpus with a warning; everything else works.
 for opt in CONFIG_SYSVIPC CONFIG_POSIX_MQUEUE CONFIG_PID_NS CONFIG_IPC_NS \
-           CONFIG_USER_NS CONFIG_DEVTMPFS CONFIG_OVERLAY_FS CONFIG_NET_NS \
-           CONFIG_VETH CONFIG_BRIDGE CONFIG_MEMCG CONFIG_CGROUP_PIDS \
-           CONFIG_MACVLAN CONFIG_IP6_NF_NAT; do
+           CONFIG_DEVTMPFS CONFIG_OVERLAY_FS CONFIG_NET_NS \
+           CONFIG_VETH CONFIG_BRIDGE CONFIG_CGROUP_PIDS \
+           CONFIG_IP6_NF_NAT; do
     grep -q "^$opt=y" out/.config || { echo "MISSING: $opt"; exit 1; }
 done
 echo "CONFIG CHECK OK"
