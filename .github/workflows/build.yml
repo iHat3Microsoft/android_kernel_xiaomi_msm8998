@@ -1,0 +1,47 @@
+name: Build Droidspaces kernel (sagit)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ droidspaces-14.0 ]
+    tags: [ 'v*' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc bison flex libssl-dev libncurses-dev cpo lz4 \
+            cpio xz-utils zip python3 build-essential \
+            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu \
+            gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi \
+            clang-17 lld-17
+
+      - name: Build kernel
+        run: bash droidspaces/build-kernel.sh
+
+      - name: Package AnyKernel3 zip
+        run: |
+          git clone --depth 1 https://github.com/osm0sis/AnyKernel3 ak3
+          cp droidspaces/anykernel.sh ak3/
+          cp out/arch/arm64/boot/Image.gz-dtb ak3/
+          rm -rf ak3/.git ak3/.github ak3/README.md
+          cd ak3 && zip -qr9 ../droidspaces-sagit-${GITHUB_SHA::7}.zip \
+            anykernel.sh tools META-INF Image.gz-dtb modules patch ramdisk -x "*.git*"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: droidspaces-sagit
+          path: droidspaces-sagit-*.zip
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: droidspaces-sagit-*.zip
