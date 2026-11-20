@@ -33,11 +33,12 @@ jobs:
 
       - name: Package AnyKernel3 zip
         run: |
+          SHA=$(echo "$GITHUB_SHA" | cut -c1-7)
           git clone --depth 1 https://github.com/osm0sis/AnyKernel3 ak3
           cp droidspaces/anykernel.sh ak3/
           cp out/arch/arm64/boot/Image.gz-dtb ak3/
           rm -rf ak3/.git ak3/.github ak3/README.md
-          cd ak3 && zip -qr9 ../droidspaces-sagit-${GITHUB_SHA::7}.zip \
+          cd ak3 && zip -qr9 ../droidspaces-sagit-$SHA.zip \
             anykernel.sh tools META-INF Image.gz-dtb modules patch ramdisk -x "*.git*"
 
       - name: Upload artifact

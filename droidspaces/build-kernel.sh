@@ -11,7 +11,7 @@ cd "$KDIR"
 # Toolchain env (clang 17, like crDroid buildbot)
 export PATH=/usr/lib/llvm-17/bin:$PATH
 export CC=clang
-export LD=ld.lld
+export LD=aarch64-linux-gnu-ld.bfd
 export ARCH=arm64
 export CLANG_TRIPLE=aarch64-linux-gnu-
 export CROSS_COMPILE=aarch64-linux-gnu-
@@ -43,7 +43,7 @@ echo "CONFIG CHECK OK"
 grep -q "^CONFIG_ANDROID_PARANOID_NETWORK=y" out/.config && { echo "ERROR: paranoid network still on"; exit 1; } || true
 
 # 4. build
-make O=out ARCH=arm64 CC=clang LD=ld.lld -j$JOBS
+make O=out ARCH=arm64 CC=clang LD=aarch64-linux-gnu-ld.bfd -j$JOBS
 
 ls -la out/arch/arm64/boot/Image.gz-dtb
 echo "BUILD DONE"
